@@ -1,0 +1,5 @@
+{
+    "is_select_all":false,
+    "selected_fields":["Opiskelijan nimi","YHTmaluo18.7","YHTmaluo18.8","YHTmaluo18.9","YHTmaluo18.10","YHTmaluo18.1","YHTmaluo18.11","YHTmaluo18.12","YHTmaluo18.3"],
+    "displayed_fields":["Opiskelijan nimi","I","II","III","IV","Ma","Fy","Ke","FyKe"]
+}
