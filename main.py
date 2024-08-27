@@ -12,7 +12,7 @@ class FileManager:
 
     def _load_config(self):
         try: 
-            with open(self.config_file, 'r') as file: #Try to read config file
+            with open(self.config_file, 'r') as file:
                 return json.loads(file.read()) 
         except FileNotFoundError:
             print("W: Configuration file not found, the default configuration set will be used.")
@@ -45,55 +45,72 @@ class HtmlParcer:
         return self.soup.tbody.find_all("tr")
 
 class DataManager:
-    def __init__(self, parser, config):
+    def __init__(self, parser, config, app):
+        self._app = app
         self.parser = parser
         self.config = config
+        self.selected_fields = self._initialize_selected_fields()
         self.table = self._initialize_table()
         self.indexes_list = self._initialize_indexes()
         self._process_data()
 
+    def _initialize_selected_fields(self):
+        fields_list = [["Opiskelijan nimi"]]
+
+        for n,i in enumerate(self._app.gui.checkboxes_list):
+            if i.get() == 1:
+                element = [i.cget("text")]
+                if len(self._app.gui.entry_list[n].get()) != 0:
+                    element.append(self._app.gui.entry_list[n].get())
+                fields_list.append(element)
+        return fields_list
+
     def _initialize_table(self):
-        if self.config.is_select_all:
-            return {field: [] for field in ["Opiskelijan nimi"] + self.parser.fields_list}
-        else:
-            return {self.config.displayed_fields[i]: [] for i in range(len(self.config.selected_fields))}
+        table = {}
+        table["Opiskelijan nimi"] = [] 
+        for i in self.selected_fields:
+            print(i)
+            table[i[-1]] = []
+        return table
 
     def _initialize_indexes(self):
-        print(self.parser.fields_list)
-        if not self.config.is_select_all:
-            return [self.parser.fields_list.index(field) for field in self.config.selected_fields]
-        return []
+        indexes_list = []
+        for i in self.selected_fields:
+            if i[0] in self.parser.fields_list:
+                indexes_list.append(self.parser.fields_list.index(i[0]))
+        return indexes_list
 
     def _delete_spaces(self, text):
         return ''.join(char for char in text if char.isalnum())
 
     def _process_data(self):
-        for n, row in enumerate(self.parser.progress_list):
-            elements = row.find_all("td")
+        print(self.indexes_list)
+        print(self.selected_fields)
+        for n,row in enumerate(self.parser.progress_list):
             if n == 0:
                 continue
-            for n2, element in enumerate(elements):
-                if not self.config.is_select_all and n2 not in self.indexes_list:
-                    continue
-
-                field_name = self._get_field_name(n2)
+            elements = row.find_all("td")
+            for idx, selected_field in enumerate(self.indexes_list):
+                field_name = self.selected_fields[idx][-1]
+                element = elements[selected_field]  
                 value = element.a.text if element.find("a") else self._delete_spaces(element.text)
                 value = "X" if value.lower() == "o" else value
                 self.table[field_name].append(value)
 
-    def _get_field_name(self, n2):
-        if self.config.is_select_all:
-            return self.parser.fields_list[n2]
-        return self.config.displayed_fields[self.indexes_list.index(n2)]
-
 class ExcelWriter:
-    def __init__(self, table):
+    def __init__(self, table, total_lines, filename="students"):
         self.table = table
         self.df = pd.DataFrame(table)
+        self.total_lines = total_lines
+        if  len(self.df) < self.total_lines:
+            empty_rows = self.total_lines - len(self.df)
+            empty_data = pd.DataFrame([[""] * len(self.df.columns)] * empty_rows, columns=self.df.columns)
+            self.df = pd.concat([self.df, empty_data], ignore_index=True)
+        self.filename = filename
         self._write_to_excel()
 
     def _write_to_excel(self):
-        with pd.ExcelWriter('students.xlsx', engine='openpyxl') as writer:
+        with pd.ExcelWriter(self.filename+".xlsx", engine='openpyxl') as writer:
             self.df.to_excel(writer, sheet_name='Table', index=False)
             work_sheet = writer.sheets['Table']
             self._adjust_columns(work_sheet)
@@ -142,8 +159,6 @@ class Gui(CTk.CTk):
         self.title("Teacher helper")
         self._set_appearance_mode("light")
         self.resizable(height=False, width=False)
-
-        
 
         self.load_menu() 
 
@@ -194,13 +209,31 @@ class Gui(CTk.CTk):
             checkbox = CTk.CTkCheckBox(master=checkbox_frame,variable=checkbox_var, text=i, font=(self._FONT,16), text_color="black", checkbox_width=20, checkbox_height=20)
             checkbox.grid(row=n, column=0, sticky="w")
             self.checkboxes_list.append(checkbox)
-            #self.checkboxes_list.append(checkbox_var)
             
-            entry = CTk.CTkEntry(master=checkbox_frame, state=state, fg_color="#D5D5D5",text_color="black")
+            entry = CTk.CTkEntry(master=checkbox_frame, state=state,font=(self._FONT, 18), fg_color="#D5D5D5",text_color="black")
             entry.grid(row=n, column=1, sticky="w", padx=(10,0))
             entry.bind("<Return>", self._app.focus_next_entry)
             self.entry_list.append(entry)
         
+        self.file_name_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
+        self.file_name_frame.grid(row=3, column=0,sticky="ne",padx=(0,100))
+        self.file_name_frame_text = CTk.CTkLabel(master=self.file_name_frame, text="Write the file name", font=(self._FONT, 24),text_color="black")
+        self.file_name_frame_text.grid(row=0,column=0)
+        self.file_name_frame_entry = CTk.CTkEntry(master=self.file_name_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
+        self.file_name_frame_entry.grid(row=1,column=0, pady=(5,0))
+        
+        self.column_count_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
+        self.column_count_frame.grid(row=3, column=0,sticky="se",padx=(0,66), pady=(0,150))
+        self.column_count_frame_text = CTk.CTkLabel(master=self.column_count_frame, text="Write the number of lines", font=(self._FONT, 24),text_color="black")
+        self.column_count_frame_text.grid(row=0,column=0)
+        self.column_count_frame_entry = CTk.CTkEntry(master=self.column_count_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
+        self.column_count_frame_entry.grid(row=1,column=0, pady=(5,0))
+        
+        self.back_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(0),hover_color=self._HOVER_PURPLE_COLOR, text="Back", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        self.back_button.grid(row=4, column=0, sticky="ws", padx=(10,0), pady=(5,0))
+        self.back_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        self.back_button.grid(row=4, column=0, sticky="se", padx=(0,10), pady=(5,0))
+
     def _clear(self):
         for e in self.winfo_children():
             e.destroy()
@@ -225,10 +258,17 @@ class App:
     
     def _parse_html(self):
         self.html_parser = HtmlParcer(self._html)
-        self._data_manager = DataManager(self.html_parser, self.config_manager)
     
     def _write_to_excel(self):
-        self.excel_writer = ExcelWriter(self._data_manager.table)
+        filename = self.gui.file_name_frame_entry.get()
+        total_lines = self.gui.column_count_frame_entry.get()
+        try:
+            total_lines = int(total_lines)
+        except:
+            total_lines = 0
+        if len(filename) == 0:
+            filename = "students"
+        self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , filename)
 
     def on_select_checkbox(self, *args):
         index = int(args[0][6:])
@@ -244,7 +284,6 @@ class App:
         if value != 1:
             state = "disabled"
         for n in range(0, len(self.gui.checkboxes_list)):
-            #self.gui.checkboxes_list[n].set(value)
             if value == 1:
                 self.gui.checkboxes_list[n].select()
             else:
@@ -254,7 +293,12 @@ class App:
             else:
                 self.gui.entry_list[n].delete(0, CTk.END)
                 self.gui.entry_list[n].configure(state=state, fg_color="#D5D5D5")
-                
+
+    def compilate_data(self):
+        self._data_manager = DataManager(self.html_parser, self.config_manager,self)
+        print(self._data_manager.table)
+        self._write_to_excel()
+
     def menu_button_handle(self):
         try:
             self._html = self.gui.clipboard_get()
@@ -267,7 +311,6 @@ class App:
             print("Wrong html code")
             return
         self.gui.load_main()
-        #print(self._data_manager.table)
     
     def select_checkboxes_by_template(self, name):
         print(name)
@@ -296,5 +339,9 @@ class App:
                         break
                     next_index += 1
                 break
+    
+    def change_window(self, index):
+        if index==0:
+            self.gui.load_menu()
 if __name__ == "__main__":
     app = App()
