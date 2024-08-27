@@ -1,5 +1,6 @@
 {
     "is_select_all":true,
     "selected_fields":["Opiskelijan nimi","YHTmaluo18.7","YHTmaluo18.8","YHTmaluo18.9","YHTmaluo18.10","YHTmaluo18.1","YHTmaluo18.11","YHTmaluo18.12","YHTmaluo18.3"],
-    "displayed_fields":["Opiskelijan nimi","I","II","III","IV","Ma","Fy","Ke","FyKe"]
+    "displayed_fields":["Opiskelijan nimi","I","II","III","IV","Ma","Fy","Ke","FyKe"],
+    "templates":{"Math":[["YHTmaluo18.7","I"],["YHTmaluo18.8","II"],["YHTmaluo18.9","III"],["YHTmaluo18.10","IV"],["YHTmaluo18.1","V"],["YHTmaluo18.11","Fy"],["YHTmaluo18.12","Ke"],["YHTmaluo18.3","FyKe"]], "Finn":[["YHTmaluo18.9"],["YHTmaluo18.10", "Writing"]]}
 }
