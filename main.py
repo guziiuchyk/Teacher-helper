@@ -1,4 +1,3 @@
-from typing import Tuple
 from bs4 import BeautifulSoup
 import pandas as pd
 from openpyxl.styles import PatternFill, Border, Side, Alignment
@@ -25,9 +24,6 @@ class FileManager:
 
 class ConfigManager:
     def __init__(self, config):
-            self.is_select_all = config["is_select_all"]
-            self.selected_fields = config["selected_fields"]
-            self.displayed_fields = config["displayed_fields"]
             self.templates = config["templates"]
 
 class HtmlParcer:
@@ -117,14 +113,26 @@ class ExcelWriter:
             self._apply_styles(work_sheet)
 
     def _adjust_columns(self, sheet):
-        max_length = 0
-        for col in sheet.columns:
-            if col[0].column_letter == 'A':
-                for cell in col:
+        base_width = 10
+        column_widths = {}
+        for column in sheet.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
                     if len(str(cell.value)) > max_length:
                         max_length = len(cell.value)
-                adjusted_width = (max_length + 2)
-                sheet.column_dimensions[col[0].column_letter].width = adjusted_width
+                except:
+                    pass
+            column_widths[column_letter] = max_length
+
+        if 'A' in column_widths:
+            sheet.column_dimensions['A'].width = column_widths['A']
+
+        max_width_for_others = max(width for letter, width in column_widths.items() if letter != 'A')
+        for column_letter in column_widths:
+            if column_letter != 'A':
+                sheet.column_dimensions[column_letter].width = max(max_width_for_others, base_width)
 
     def _apply_styles(self, sheet):
         fill = PatternFill(start_color="828181", end_color="828181", fill_type='solid')
@@ -234,6 +242,20 @@ class Gui(CTk.CTk):
         self.back_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
         self.back_button.grid(row=4, column=0, sticky="se", padx=(0,10), pady=(5,0))
 
+    def load_success(self):
+        self._clear()
+        self._load_header()
+
+        self.success_text = CTk.CTkLabel(master=self, text="Success!", font=(self._FONT,32),fg_color=self._WHITE_COLOR,text_color="black")
+        self.success_text.grid(row=1, column=0, pady=(100, 0))
+        self.success_frame = CTk.CTkFrame(master=self, bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR)
+        self.success_frame.grid(row=2,column=0, pady=(15,0))
+        self.exit_button = CTk.CTkButton(master=self.success_frame,command=self.quit,bg_color=self._WHITE_COLOR,width=100, text="Exit", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        self.exit_button.grid(row=0,column=0)
+        self.exit_button = CTk.CTkButton(master=self.success_frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=100, text="Back", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        self.exit_button.grid(row=0,column=1, padx=10)
+        self.exit_button = CTk.CTkButton(master=self.success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Menu", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        self.exit_button.grid(row=0,column=2)
     def _clear(self):
         for e in self.winfo_children():
             e.destroy()
@@ -298,6 +320,7 @@ class App:
         self._data_manager = DataManager(self.html_parser, self.config_manager,self)
         print(self._data_manager.table)
         self._write_to_excel()
+        self.change_window(2)
 
     def menu_button_handle(self):
         try:
@@ -343,5 +366,9 @@ class App:
     def change_window(self, index):
         if index==0:
             self.gui.load_menu()
+        elif index==1:
+            self.gui.load_main()
+        elif index==2:
+            self.gui.load_success()
 if __name__ == "__main__":
     app = App()
