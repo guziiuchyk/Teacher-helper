@@ -8,6 +8,7 @@ __pycache__/
 *.xlsx
 # C extensions
 *.so
+dnd.py
 
 # Distribution / packaging
 .Python
