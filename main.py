@@ -130,13 +130,8 @@ class DataManager:
                 element = elements[selected_field]  
                 value = element.a.text if element.find("a") else self._delete_spaces(element.text)
                 value = "X" if value.lower() == "o" else value
-                #print(self._delete_spaces(str(idx)+value))
-                #print(len(self.table[field_name]))
-                #print(idx)
-                #print()
                 self.table[field_name].append(value)
         for i in self.table:
-            #print(len(self.table[i]) % len(self.table["Opiskelijan nimi"]))
             if len(self.table[i]) % len(self.table["Opiskelijan nimi"]) == 0 and len(self.table[i]) != len(self.table["Opiskelijan nimi"]):
                 list = self.table[i]
                 step = int(len(list) / len(self.table["Opiskelijan nimi"]))
@@ -152,16 +147,10 @@ class DataManager:
                                 new_element = new_element + int(k)
                     new_array.append(new_element)
                 self.table[i] = new_array
-            #print()
 
 class ExcelWriter:
     def __init__(self, table, total_lines, folder_path, filename="students"):
         self.table = table
-        #for i in table:
-        #    print(i)
-        #    print(len(table[i]))
-        #    print(table[i])
-        #    print()
         self.df = pd.DataFrame(table)
         self.total_lines = total_lines
         self.folder_path = folder_path
@@ -376,7 +365,6 @@ class Gui(CTk.CTk):
         choose_directory_text.grid(row=1, column=0, pady=(10,0))
 
         select_folder_frame = CTk.CTkFrame(master=frame, fg_color=GRAY_COLOR)
-        #select_folder_frame.grid_propagate(False)
         select_folder_frame.grid(row=2, column=0, pady=(5,0))
 
         self.selected_folder_entry = CTk.CTkEntry(master=select_folder_frame, text_color="black",fg_color=self._WHITE_COLOR, corner_radius=5, font=(self._FONT,10),width=200)
@@ -435,8 +423,8 @@ class App:
         self.html_parser = HtmlParcer(self._html)
 
     def _write_to_excel(self):
-        filename = "" #self.gui.file_name_frame_entry.get()
-        total_lines = ""# self.gui.column_count_frame_entry.get()
+        filename = "" 
+        total_lines = ""
         try:
             total_lines = int(total_lines)
         except:
