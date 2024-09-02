@@ -58,7 +58,20 @@ class HtmlParcer:
         self.progress_list = self._parse_progress()
 
     def _parse_fields(self):
-        list = [field.text for field in self.soup.thead.find_all("span")]
+        #list = [field.text for field in self.soup.thead.find_all("span")]
+        th_tags =  self.soup.thead.find_all("th", class_='center')
+        list = []
+        for th_tag in th_tags:
+            data_tooltip = th_tag.get('data-tooltip')
+
+            data_dict = json.loads(data_tooltip.replace('&quot;', ''))
+            fields_name = data_dict.get('Opintojakson/tutkinnon osan nimi')
+            if data_dict.get("Koodi"):
+                if data_dict.get("Koodi") == "pak":
+                    fields_name = f"Pak.{data_dict.get('Opintojakson/tutkinnon osan nimi')}"
+                else:
+                    fields_name = f"Val.{data_dict.get('Opintojakson/tutkinnon osan nimi')}"
+            list.append(fields_name)
         list.insert(0, "Opiskelijan nimi")
         return(list)
 
@@ -117,22 +130,53 @@ class DataManager:
                 element = elements[selected_field]  
                 value = element.a.text if element.find("a") else self._delete_spaces(element.text)
                 value = "X" if value.lower() == "o" else value
+                #print(self._delete_spaces(str(idx)+value))
+                #print(len(self.table[field_name]))
+                #print(idx)
+                #print()
                 self.table[field_name].append(value)
+        for i in self.table:
+            #print(len(self.table[i]) % len(self.table["Opiskelijan nimi"]))
+            if len(self.table[i]) % len(self.table["Opiskelijan nimi"]) == 0 and len(self.table[i]) != len(self.table["Opiskelijan nimi"]):
+                list = self.table[i]
+                step = int(len(list) / len(self.table["Opiskelijan nimi"]))
+                new_array=[]
+                for j in range(0, len(list),step):
+                    current_elements = list[j:j + step]
+                    new_element = ""
+                    for k in current_elements:
+                        if k != "":
+                            if new_element == "":
+                                new_element = int(k)
+                            else:
+                                new_element = new_element + int(k)
+                    new_array.append(new_element)
+                self.table[i] = new_array
+            #print()
 
 class ExcelWriter:
-    def __init__(self, table, total_lines, filename="students"):
+    def __init__(self, table, total_lines, folder_path, filename="students"):
         self.table = table
+        #for i in table:
+        #    print(i)
+        #    print(len(table[i]))
+        #    print(table[i])
+        #    print()
         self.df = pd.DataFrame(table)
         self.total_lines = total_lines
+        self.folder_path = folder_path
         if  len(self.df) < self.total_lines:
             empty_rows = self.total_lines - len(self.df)
             empty_data = pd.DataFrame([[""] * len(self.df.columns)] * empty_rows, columns=self.df.columns)
             self.df = pd.concat([self.df, empty_data], ignore_index=True)
         self.filename = filename
         self._write_to_excel()
-
+    #self.folder_path+self.filename+".xlsx"
     def _write_to_excel(self):
-        with pd.ExcelWriter(self.filename+".xlsx", engine='openpyxl') as writer:
+        folder_path = ""
+        if self.folder_path:
+            folder_path = self.folder_path+"/"
+        with pd.ExcelWriter(f"{folder_path}{self.filename}.xlsx", engine='openpyxl') as writer:
             self.df.to_excel(writer, sheet_name='Table', index=False)
             work_sheet = writer.sheets['Table']
             self._adjust_columns(work_sheet)
@@ -203,8 +247,8 @@ class Gui(CTk.CTk):
         self._load_header(is_show_settings=True)
         menu_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="black",text="Copy code, and click the button", font=(self._FONT,32))
         menu_text.grid(row=1, column=0, pady=(90, 0))
-        error_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="red",text="", font=(self._FONT,24))
-        error_text.grid(row=2, column=0, pady=(5))
+        self.error_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="red",text="", font=(self._FONT,24))
+        self.error_text.grid(row=2, column=0, pady=(5))
         menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Paste",font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         menu_button.grid(row=3, column=0, pady=(10,0))
 
@@ -246,12 +290,12 @@ class Gui(CTk.CTk):
 
             checkbox_var = CTk.IntVar(value=0)
             checkbox_var.trace_add("write", self._app.on_select_checkbox)
-            checkbox = CTk.CTkCheckBox(master=checkbox_frame,variable=checkbox_var, text=i, font=(self._FONT,16), text_color="black", checkbox_width=20, checkbox_height=20)
-            checkbox.grid(row=n, column=0, sticky="w")
+            checkbox = CTk.CTkCheckBox(master=checkbox_frame,variable=checkbox_var, text=i, font=(self._FONT,14), text_color="black", checkbox_width=20, checkbox_height=20)
+            checkbox.grid(row=n*2, column=0, sticky="w")
             self.checkboxes_list.append(checkbox)
 
-            entry = CTk.CTkEntry(master=checkbox_frame, state=state,font=(self._FONT, 18), fg_color="#D5D5D5",text_color="black")
-            entry.grid(row=n, column=1, sticky="w", padx=(10,0))
+            entry = CTk.CTkEntry(master=checkbox_frame, state=state,font=(self._FONT, 16),width=200, fg_color="#D5D5D5",text_color="black")
+            entry.grid(row=n*2+1, column=0, sticky="w",pady=(0,10), padx=(25,0))
             entry.bind("<Return>", self._app.focus_next_entry)
             self.entry_list.append(entry)
 
@@ -336,7 +380,10 @@ class Gui(CTk.CTk):
         select_folder_frame.grid(row=2, column=0, pady=(5,0))
 
         self.selected_folder_entry = CTk.CTkEntry(master=select_folder_frame, text_color="black",fg_color=self._WHITE_COLOR, corner_radius=5, font=(self._FONT,10),width=200)
-        self.selected_folder_entry.insert(0, "c/dsfs/fdsfs/d")
+        if self._app.config_manager.save_folder_path:
+            self.selected_folder_entry.insert(0, self._app.config_manager.save_folder_path)
+        else:
+            self.selected_folder_entry.insert(0, Path.cwd())
         self.selected_folder_entry.configure(state="disabled")
         self.selected_folder_entry.grid(row=0,column=0)
 
@@ -396,7 +443,7 @@ class App:
             total_lines = 0
         if len(filename) == 0:
             filename = "students"
-        self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , filename)
+        self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , self.config_manager.save_folder_path, filename)
 
     def on_select_checkbox(self, *args):
         try:
@@ -442,10 +489,10 @@ class App:
         except:
             self.gui.error_text.configure(text="Cant get data from clipboard")
             return
+        self._parse_html()
         try:
             self._parse_html()
         except:
-            print("Wrong html code")
             self.gui.error_text.configure(text="Wrong html code")
             return
         self.gui.load_main()
@@ -469,11 +516,11 @@ class App:
     def focus_next_entry(self, event):
         current_widget = event.widget
 
-        for i, ctk_entry in enumerate(self.entry_list):
+        for i, ctk_entry in enumerate(self.gui.entry_list):
             if ctk_entry._entry == current_widget:
                 next_index = i + 1
-                while next_index < len(self.entry_list):
-                    next_widget = self.entry_list[next_index]
+                while next_index < len(self.gui.entry_list):
+                    next_widget = self.gui.entry_list[next_index]
                     if next_widget.cget("state") == "normal":
                         next_widget.focus_set()
                         break
@@ -505,6 +552,7 @@ class App:
             self.gui.selected_folder_entry.configure(state="normal")
             self.gui.selected_folder_entry.delete(0, CTk.END)
             self.gui.selected_folder_entry.insert(0, directory)
+            self.config_manager.save_folder_path = directory
             self.gui.selected_folder_entry.configure(state="disabled")
 
     def on_click_remove_folder(self):
