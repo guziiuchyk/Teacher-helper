@@ -46,6 +46,15 @@ class FileManager:
         with open(self.config_file, 'r') as file:
             return json.loads(file.read())
 
+    def write_config(self, config_manager):
+        config = {}
+        for attr in dir(config_manager):
+            if not attr.startswith('__'):
+                value = getattr(config_manager, attr)
+                config[attr] = value
+        with open(self.config_file, "w") as file:
+            file.write(json.dumps(config))
+
 class ConfigManager:
     def __init__(self, config):
             self.templates = config["templates"]
@@ -262,8 +271,9 @@ class Gui(CTk.CTk):
             button = CTk.CTkButton(master=self,command=lambda i=i: self._app.select_checkboxes_by_template(i),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=i,font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
             button.grid(row=2, column=0,sticky="w", padx=(BUTTON_WIDTH*(n+2)+BUTTON_PADDING*(n+3),0),pady=(BUTTON_PADDING, 0))
 
-        template_add = CTk.CTkButton(master=self,hover_color=self._HOVER_PURPLE_COLOR,width=30,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="+",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
-        template_add.grid(row=2, column=0,sticky="w",padx=(345,0),pady=(BUTTON_PADDING,0))
+        if len(self._app.config_manager.templates) < 3:
+            template_add = CTk.CTkButton(master=self,command=self.load_add_tamplate_modal_window,hover_color=self._HOVER_PURPLE_COLOR,width=30,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="+",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+            template_add.grid(row=2, column=0,sticky="w",padx=(345,0),pady=(BUTTON_PADDING,0))
 
         checkbox_frame = CTk.CTkScrollableFrame(master=self,fg_color="#D5D5D5",bg_color=self._WHITE_COLOR, width=380, height=300)
         checkbox_frame.grid(row=3, column=0, sticky="w", padx=(10,0), pady=(10,0))
@@ -288,33 +298,33 @@ class Gui(CTk.CTk):
             entry.bind("<Return>", self._app.focus_next_entry)
             self.entry_list.append(entry)
 
-        self.file_name_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
-        self.file_name_frame.grid(row=3, column=0,sticky="ne",padx=(0,100))
+        file_name_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
+        file_name_frame.grid(row=3, column=0,sticky="ne",padx=(0,100))
 
-        self.file_name_frame_text = CTk.CTkLabel(master=self.file_name_frame, text="Write the file name", font=(self._FONT, 24),text_color="black")
-        self.file_name_frame_text.grid(row=0,column=0)
+        file_name_frame_text = CTk.CTkLabel(master=file_name_frame, text="Write the file name", font=(self._FONT, 24),text_color="black")
+        file_name_frame_text.grid(row=0,column=0)
 
-        self.file_name_frame_entry = CTk.CTkEntry(master=self.file_name_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
+        self.file_name_frame_entry = CTk.CTkEntry(master=file_name_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
         self.file_name_frame_entry.grid(row=1,column=0, pady=(5,0))
 
         self.column_count_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
         self.column_count_frame.grid(row=3, column=0,sticky="se",padx=(0,66), pady=(0,150))
 
-        self.column_count_frame_text = CTk.CTkLabel(master=self.column_count_frame, text="Write the number of lines", font=(self._FONT, 24),text_color="black")
-        self.column_count_frame_text.grid(row=0,column=0)
+        column_count_frame_text = CTk.CTkLabel(master=self.column_count_frame, text="Write the number of lines", font=(self._FONT, 24),text_color="black")
+        column_count_frame_text.grid(row=0,column=0)
 
         self.column_count_frame_entry = CTk.CTkEntry(master=self.column_count_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
         self.column_count_frame_entry.grid(row=1,column=0, pady=(5,0))
 
         self.is_custom_order = CTk.IntVar(value=0)
-        self.checkbox_is_custom_order = CTk.CTkCheckBox(master=self,bg_color=self._WHITE_COLOR,variable=self.is_custom_order, text="Custom order", font=(self._FONT,22), text_color="black", checkbox_width=20, checkbox_height=20)
-        self.checkbox_is_custom_order.grid(row=3, column=0,sticky="se",padx=(0,130), pady=(0,80 ))
+        checkbox_is_custom_order = CTk.CTkCheckBox(master=self,bg_color=self._WHITE_COLOR,variable=self.is_custom_order, text="Custom order", font=(self._FONT,22), text_color="black", checkbox_width=20, checkbox_height=20)
+        checkbox_is_custom_order.grid(row=3, column=0,sticky="se",padx=(0,130), pady=(0,80 ))
 
-        self.back_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(0),hover_color=self._HOVER_PURPLE_COLOR, text="Back", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
-        self.back_button.grid(row=4, column=0, sticky="ws", padx=(10,0), pady=(5,0))
+        back_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(0),hover_color=self._HOVER_PURPLE_COLOR, text="Back", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        back_button.grid(row=4, column=0, sticky="ws", padx=(10,0), pady=(5,0))
 
-        self.next_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
-        self.next_button.grid(row=4, column=0, sticky="se", padx=(0,10), pady=(5,0))
+        next_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        next_button.grid(row=4, column=0, sticky="se", padx=(0,10), pady=(5,0))
 
     def load_success(self):
         self._clear()
@@ -384,8 +394,30 @@ class Gui(CTk.CTk):
         back_button = CTk.CTkButton(master=self,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Back", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         back_button.grid(row=2, column=0, padx=(0,110), pady=(10,0))
 
-        save_button = CTk.CTkButton(master=self,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Save", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        save_button = CTk.CTkButton(master=self,command=self._app.on_click_save_settings,bg_color=self._WHITE_COLOR,width=100, text="Save", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         save_button.grid(row=2, column=0, padx=(110,0), pady=(10,0))
+
+    def load_add_tamplate_modal_window(self):
+        background_frame = CTk.CTkFrame(master=self, width=800, height=427, fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
+        background_frame.grid_propagate(False)
+        background_frame.grid_columnconfigure(0, weight=1)
+        background_frame.grid(row=1, column=0)
+
+        frame = CTk.CTkFrame(master=background_frame, width=300, height=180, corner_radius=20, border_color="black", border_width=1, fg_color="#dedede")
+        frame.grid_propagate(False)
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid(row=0, column=0, pady=(100,10))
+
+        title = CTk.CTkLabel(master=frame, fg_color="#dedede", text_color="black", text="Write template name", font=(self._FONT, 24))
+        title.grid(row=0, column=0, pady=(30,10))
+
+        entry = CTk.CTkEntry(master=frame,width=180, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,20))
+        entry.grid(row=1,column=0, pady=(0,10))
+
+        back_button = CTk.CTkButton(master=frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=90, text="Back", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        back_button.grid(row=2, column=0,padx=(0,100))
+        save_button = CTk.CTkButton(master=frame,command=lambda:(self._app.save_tamplate(entry.get()),background_frame.destroy()),bg_color=self._WHITE_COLOR,width=90, text="Save", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        save_button.grid(row=2, column=0,padx=(100,0))
 
     def _clear(self):
         for e in self.winfo_children():
@@ -477,7 +509,6 @@ class App:
         except:
             self.gui.error_text.configure(text="Cant get data from clipboard")
             return
-        self._parse_html()
         try:
             self._parse_html()
         except:
@@ -487,19 +518,20 @@ class App:
 
     def select_checkboxes_by_template(self, name):
         template = self.config_manager.templates[name]
+        print(template)
         self.select_all_checkboxes(0)
-        try:
-            for i in template:
-                for n2,j in enumerate(self.gui.checkboxes_list):
-                    text = j.cget("text")
-                    if text == i[0]:
-                        j.select()
-                        self.gui.entry_list[n2].configure(state="normal", fg_color=self.gui._WHITE_COLOR)
-                        if len(i) == 2:
-                            self.gui.entry_list[n2].delete(0, CTk.END)
-                            self.gui.entry_list[n2].insert(0, i[1])
-        except:
-            pass
+        for i in template:
+            for n2,j in enumerate(self.gui.checkboxes_list):
+                text = j.cget("text")
+                print(text, end="")
+                print(" ", end="")
+                print(i[0])
+                if text == i[0]:
+                    j.select()
+                    self.gui.entry_list[n2].configure(state="normal", fg_color=self.gui._WHITE_COLOR)
+                    if len(i) == 2:
+                        self.gui.entry_list[n2].delete(0, CTk.END)
+                        self.gui.entry_list[n2].insert(0, i[1])
 
     def focus_next_entry(self, event):
         current_widget = event.widget
@@ -543,10 +575,23 @@ class App:
             self.config_manager.save_folder_path = directory
             self.gui.selected_folder_entry.configure(state="disabled")
 
+    def on_click_save_settings(self):
+        self._file_manager.write_config(self.config_manager)
+        self.change_window(0)
+
     def on_click_remove_folder(self):
         self.gui.selected_folder_entry.configure(state="normal")
-        self.gui.selected_folder_entry.delete(0, Path.cwd())
+        self.gui.selected_folder_entry.delete(0, CTk.END)
+        self.gui.selected_folder_entry.insert(0, Path.cwd())
+        self.config_manager.save_folder_path = ""
         self.gui.selected_folder_entry.configure(state="disabled")
+
+    def save_tamplate(self, name):
+        data_manager = DataManager(self)
+        data_manager.selected_fields.pop()
+        self.config_manager.templates[name] = data_manager.selected_fields
+        self._file_manager.write_config(self.config_manager)
+
 
 if __name__ == "__main__":
     app = App()
