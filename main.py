@@ -169,7 +169,7 @@ class ExcelWriter:
             self.df = pd.concat([self.df, empty_data], ignore_index=True)
         self.filename = filename
         self._write_to_excel()
-    #self.folder_path+self.filename+".xlsx"
+
     def _write_to_excel(self):
         folder_path = ""
         if self.folder_path:
@@ -245,8 +245,10 @@ class Gui(CTk.CTk):
         self._load_header(is_show_settings=True)
         menu_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="black",text="Copy code, and click the button", font=(self._FONT,32))
         menu_text.grid(row=1, column=0, pady=(90, 0))
+
         self.error_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="red",text="", font=(self._FONT,24))
         self.error_text.grid(row=2, column=0, pady=(5))
+
         menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Paste",font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         menu_button.grid(row=3, column=0, pady=(10,0))
 
@@ -261,19 +263,22 @@ class Gui(CTk.CTk):
         hero_text = CTk.CTkLabel(master=self, fg_color=self._WHITE_COLOR, text_color="black", text="Choose template", font=(self._FONT, 24))
         hero_text.grid(row=1,column=0, sticky="w", padx=(7,0), pady=(7,0))
 
-        template_clear = CTk.CTkButton(master=self,command=lambda: self._app.select_all_checkboxes(0),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Clear",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
-        template_clear.grid(row=2, column=0, sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
+        template_buttons_frame = CTk.CTkFrame(master=self, fg_color=self._WHITE_COLOR, bg_color=self._WHITE_COLOR)
+        template_buttons_frame.grid(row=2, column=0, sticky="w")
 
-        template_all = CTk.CTkButton(master=self, command=lambda: self._app.select_all_checkboxes(1),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="All",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
-        template_all.grid(row=2, column=0,sticky="w", padx=(BUTTON_WIDTH+BUTTON_PADDING*2,0),pady=(BUTTON_PADDING, 0))
+        template_clear = CTk.CTkButton(master=template_buttons_frame,command=lambda: self._app.select_all_checkboxes(0),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Clear",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        template_clear.grid(row=0, column=0, sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
+
+        template_all = CTk.CTkButton(master=template_buttons_frame, command=lambda: self._app.select_all_checkboxes(1),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="All",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        template_all.grid(row=0, column=1,sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
 
         for n,i in enumerate(self._app.config_manager.templates):
-            button = CTk.CTkButton(master=self,command=lambda i=i: self._app.select_checkboxes_by_template(i),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=i,font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
-            button.grid(row=2, column=0,sticky="w", padx=(BUTTON_WIDTH*(n+2)+BUTTON_PADDING*(n+3),0),pady=(BUTTON_PADDING, 0))
+            button = CTk.CTkButton(master=template_buttons_frame,command=lambda i=i: self._app.select_checkboxes_by_template(i),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=i,font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+            button.grid(row=0, column=2+n,sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
 
         if len(self._app.config_manager.templates) < 3:
-            template_add = CTk.CTkButton(master=self,command=self.load_add_tamplate_modal_window,hover_color=self._HOVER_PURPLE_COLOR,width=30,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="+",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
-            template_add.grid(row=2, column=0,sticky="w",padx=(345,0),pady=(BUTTON_PADDING,0))
+            template_add = CTk.CTkButton(master=template_buttons_frame,command=self.load_add_tamplate_modal_window,hover_color=self._HOVER_PURPLE_COLOR,width=30,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="+",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+            template_add.grid(row=0, column=2+len(self._app.config_manager.templates),sticky="w",padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING,0))
 
         checkbox_frame = CTk.CTkScrollableFrame(master=self,fg_color="#D5D5D5",bg_color=self._WHITE_COLOR, width=380, height=300)
         checkbox_frame.grid(row=3, column=0, sticky="w", padx=(10,0), pady=(10,0))
@@ -288,7 +293,7 @@ class Gui(CTk.CTk):
             state = "disabled"
 
             checkbox_var = CTk.IntVar(value=0)
-            checkbox_var.trace_add("write", self._app.on_select_checkbox)
+            checkbox_var.trace_add("write", lambda var_name, index, mode, n=n: self._app.on_select_checkbox(var_name, index, mode, n))
             checkbox = CTk.CTkCheckBox(master=checkbox_frame,variable=checkbox_var, text=i, font=(self._FONT,14), text_color="black", checkbox_width=20, checkbox_height=20)
             checkbox.grid(row=n*2, column=0, sticky="w")
             self.checkboxes_list.append(checkbox)
@@ -378,10 +383,12 @@ class Gui(CTk.CTk):
         select_folder_frame.grid(row=2, column=0, pady=(5,0))
 
         self.selected_folder_entry = CTk.CTkEntry(master=select_folder_frame, text_color="black",fg_color=self._WHITE_COLOR, corner_radius=5, font=(self._FONT,10),width=200)
+        
         if self._app.config_manager.save_folder_path:
             self.selected_folder_entry.insert(0, self._app.config_manager.save_folder_path)
         else:
             self.selected_folder_entry.insert(0, Path.cwd())
+
         self.selected_folder_entry.configure(state="disabled")
         self.selected_folder_entry.grid(row=0,column=0)
 
@@ -390,6 +397,20 @@ class Gui(CTk.CTk):
 
         clear_folder_button = CTk.CTkButton(master=select_folder_frame, command=self._app.on_click_remove_folder, image=self._delete_image, text="", width=20, border_width=1, border_color="black")
         clear_folder_button.grid(row=0, column=2, padx=(3,0))
+
+        delete_templates_text = CTk.CTkLabel(master=frame, text="Delete templates", font=(self._FONT,24),fg_color="#c9c9c9",text_color="black")
+        delete_templates_text.grid(row=3, column=0, pady=(15,0))
+
+        if len(self._app.config_manager.templates) != 0:
+            templates_frame = CTk.CTkFrame(master=frame, fg_color=GRAY_COLOR)
+            templates_frame.grid(row=4,column=0)
+
+            for n,i in enumerate(self._app.config_manager.templates):
+                delete_template_button = CTk.CTkButton(master=templates_frame,command=lambda i=i:(self._app.on_click_delete_template(i), delete_template_button.destroy()),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=i,font=(self._FONT,18), fg_color=self._PURPLE_COLOR, bg_color=GRAY_COLOR)
+                delete_template_button.grid(row=0, column=n, padx=5)
+        else:
+            not_found_text = CTk.CTkLabel(master=frame, text="Not found", font=(self._FONT,20),fg_color="#c9c9c9",text_color="black")
+            not_found_text.grid(row=4,column=0, pady=(10,0))
 
         back_button = CTk.CTkButton(master=self,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Back", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         back_button.grid(row=2, column=0, padx=(0,110), pady=(10,0))
@@ -416,7 +437,7 @@ class Gui(CTk.CTk):
 
         back_button = CTk.CTkButton(master=frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=90, text="Back", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         back_button.grid(row=2, column=0,padx=(0,100))
-        save_button = CTk.CTkButton(master=frame,command=lambda:(self._app.save_tamplate(entry.get()),background_frame.destroy()),bg_color=self._WHITE_COLOR,width=90, text="Save", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        save_button = CTk.CTkButton(master=frame,command=lambda:(self._app.save_tamplate(entry.get()),self._app.change_window(1)),bg_color=self._WHITE_COLOR,width=90, text="Save", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         save_button.grid(row=2, column=0,padx=(100,0))
 
     def _clear(self):
@@ -466,8 +487,7 @@ class App:
         self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , self.config_manager.save_folder_path, filename)
 
     def on_select_checkbox(self, *args):
-        try:
-            index = int(args[0][6:])
+            index = int(args[3])-1
             element = self.gui.checkboxes_list[index]
             value = element.get()
             if value == 1:
@@ -475,8 +495,6 @@ class App:
             else:
                 self.gui.entry_list[index].delete(0, CTk.END)
                 self.gui.entry_list[index].configure(state="disabled", fg_color="#D5D5D5")
-        except:
-            pass
 
     def select_all_checkboxes(self, value):
         state = "normal"
@@ -548,6 +566,7 @@ class App:
                 break
 
     def get_select_fields_for_drag(self):
+        
         return[field[-1] for field in self.selected_fields]
 
     def compilate_ordered_data(self, new_order):
@@ -586,12 +605,14 @@ class App:
         self.config_manager.save_folder_path = ""
         self.gui.selected_folder_entry.configure(state="disabled")
 
-    def save_tamplate(self, name):
-        data_manager = DataManager(self)
-        data_manager.selected_fields.pop()
-        self.config_manager.templates[name] = data_manager.selected_fields
+    def on_click_delete_template(self, name):
+        del self.config_manager.templates[name]
         self._file_manager.write_config(self.config_manager)
 
+    def save_tamplate(self, name):
+        data_manager = DataManager(self)
+        self.config_manager.templates[name] = data_manager.selected_fields
+        self._file_manager.write_config(self.config_manager)
 
 if __name__ == "__main__":
     app = App()
