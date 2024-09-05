@@ -240,7 +240,6 @@ class Gui(CTk.CTk):
         # self._SAVE_BUTTON_TEXT = "Save"
         # self._EXIT_BUTTON_TEXT = "Exit"
         # self._MENU_BUTTON_TEXT = "Menu"
-        
 
         # self._HEADER_TEXT = "Teacher helper"
         # self._MENU_COPY_AND_CLICK_TEXT = "Copy code, and click the button"
@@ -265,7 +264,6 @@ class Gui(CTk.CTk):
         # self._CUSTOM_ORDER_TITLE = "Custom order:"
 
         # self._SUCCESS_TITLE = "Success!"
-
 
         self._NEXT_BUTTON_TEXT = "Seuraava"
         self._BACK_BUTTON_TEXT = "Takaisin"
@@ -546,12 +544,11 @@ class App:
         self.html_parser = HtmlParcer(self._html)
 
     def _write_to_excel(self):
-        filename = "" 
-        total_lines = ""
         try:
             total_lines = int(total_lines)
         except:
             total_lines = 0
+        filename = self.gui.file_name_frame_entry.get()
         if len(filename) == 0:
             filename = "students"
         self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , self.config_manager.save_folder_path, filename)
@@ -693,5 +690,6 @@ class App:
             base_path = os.path.abspath(".")
 
         return os.path.join(base_path, relative_path)
+
 if __name__ == "__main__":
     app = App()
