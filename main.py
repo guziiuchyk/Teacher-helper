@@ -235,6 +235,38 @@ class Gui(CTk.CTk):
         self._PURPLE_COLOR = "#5A4AEA"
         self._HOVER_PURPLE_COLOR = "#4533b5"
 
+        # self._NEXT_BUTTON_TEXT = "Next"
+        # self._BACK_BUTTON_TEXT = "Back"
+        # self._SAVE_BUTTON_TEXT = "Save"
+        # self._EXIT_BUTTON_TEXT = "Exit"
+        # self._MENU_BUTTON_TEXT = "Menu"
+        
+
+        # self._HEADER_TEXT = "Teacher helper"
+        # self._MENU_COPY_AND_CLICK_TEXT = "Copy code, and click the button"
+        # self._MENU_BUTTON_TEXT = "Paste"
+        # self._MENU_ERR_WRONG_HTML_CODE_TEXT = "Wrong html code"
+        # self._MENU_ERR_CANT_GET_CLIPBOARD_TEXT = "Cant get data from clipboard"
+        
+        # self._SETTINGS_TITLE_TEXT = "Settings"
+        # self._SETTINGS_SELECT_FOLDER_TEXT = "Select a folder to save the files:"
+        # self._SETTINGS_DELETE_TEMPLATES_TEXT = "Delete template"
+        # self._SETTINGS_NOT_FOUND_TEXT = "Not found"
+
+        # self._MAIN_TITLE_TEXT = "Choose template"
+        # self._MAIN_ALL_BUTTON_TEXT = "All"
+        # self._MAIN_CLEAR_BUTTON_TEXT = "Clear"
+        # self._MAIN_WRITE_FILE_NAME_TEXT = "Write file name:"
+        # self._MAIN_WRITE_LINES_COUNT_TEXT = "Write the numbe of lines:"
+        # self._CUSTOM_ORDER_TEXT = "Custom order"
+
+        # self._MAIN_MODAL_WINDOW_TITLE = "Write template name"
+
+        # self._CUSTOM_ORDER_TITLE = "Custom order:"
+
+        # self._SUCCESS_TITLE = "Success!"
+
+
         self._NEXT_BUTTON_TEXT = "Seuraava"
         self._BACK_BUTTON_TEXT = "Takaisin"
         self._SAVE_BUTTON_TEXT = "Tallenna"
