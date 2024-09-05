@@ -319,6 +319,7 @@ class Gui(CTk.CTk):
     def load_main(self):
         self._clear()
         self._load_header()
+        self._app.filename = ""
 
         BUTTON_PADDING = 5
         BUTTON_FONT_SIZE = 18
@@ -527,6 +528,7 @@ class App:
         self.config_manager = None
         self.selected_fields = None
         self.html_parser = None
+        self.filename = ""
         self.gui = Gui(self)
         self._start()
         self.gui.mainloop()
@@ -548,7 +550,10 @@ class App:
             total_lines = int(total_lines)
         except:
             total_lines = 0
-        filename = self.gui.file_name_frame_entry.get()
+        try:
+            filename = self.gui.file_name_frame_entry.get()
+        except:
+            filename = self.filename
         if len(filename) == 0:
             filename = "students"
         self.excel_writer = ExcelWriter(self._data_manager.table,total_lines , self.config_manager.save_folder_path, filename)
@@ -588,6 +593,7 @@ class App:
             self._write_to_excel()
             self.change_window(3)
         else:
+            self.filename = self.gui.file_name_frame_entry.get()
             self.selected_fields = self._data_manager.selected_fields
             self.change_window(2)
 
