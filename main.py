@@ -10,8 +10,7 @@ from pathlib import Path
 class DraggableListbox(CTk.CTkFrame):
     def __init__(self, master, items, **kwargs):
         super().__init__(master, **kwargs)
-
-        self.listbox = tk.Listbox(self, font=("Inter",16))
+        self.listbox = tk.Listbox(self, font=("Inter", 16), width=40)
         self.listbox.pack(fill=tk.BOTH, expand=True)
 
         for item in items:
@@ -231,6 +230,37 @@ class Gui(CTk.CTk):
         self._PURPLE_COLOR = "#5A4AEA"
         self._HOVER_PURPLE_COLOR = "#4533b5"
 
+        self._NEXT_BUTTON_TEXT = "Next"
+        self._BACK_BUTTON_TEXT = "Back"
+        self._SAVE_BUTTON_TEXT = "Save"
+        self._EXIT_BUTTON_TEXT = "Exit"
+        self._MENU_BUTTON_TEXT = "Menu"
+        
+
+        self._HEADER_TEXT = "Teacher helper"
+        self._MENU_COPY_AND_CLICK_TEXT = "Copy code, and click the button"
+        self._MENU_BUTTON_TEXT = "Paste"
+        self._MENU_ERR_WRONG_HTML_CODE_TEXT = "Wrong html code"
+        self._MENU_ERR_CANT_GET_CLIPBOARD_TEXT = "Cant get data from clipboard"
+        
+        self._SETTINGS_TITLE_TEXT = "Settings"
+        self._SETTINGS_SELECT_FOLDER_TEXT = "Select a folder to save the files:"
+        self._SETTINGS_DELETE_TEMPLATES_TEXT = "Delete template"
+        self._SETTINGS_NOT_FOUND_TEXT = "Not found"
+
+        self._MAIN_TITLE_TEXT = "Choose template"
+        self._MAIN_ALL_BUTTON_TEXT = "All"
+        self._MAIN_CLEAR_BUTTON_TEXT = "Clear"
+        self._MAIN_WRITE_FILE_NAME_TEXT = "Write file name:"
+        self._MAIN_WRITE_LINES_COUNT_TEXT = "Write the numbe of lines:"
+        self._CUSTOM_ORDER_TEXT = "Custom order"
+
+        self.MAIN_MODAL_WINDOW_TITLE = "Write template name"
+
+        self.CUSTOM_ORDER_TITLE = "Custom order:"
+
+        self.SUCCESS_TITLE = "Success!"
+
         self.geometry("800x500")
         self.title("Teacher helper")
         self._set_appearance_mode("light")
@@ -243,33 +273,32 @@ class Gui(CTk.CTk):
     def load_menu(self):
         self._clear()
         self._load_header(is_show_settings=True)
-        menu_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="black",text="Copy code, and click the button", font=(self._FONT,32))
+        menu_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="black",text=self._MENU_COPY_AND_CLICK_TEXT, font=(self._FONT,32))
         menu_text.grid(row=1, column=0, pady=(90, 0))
 
         self.error_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="red",text="", font=(self._FONT,24))
         self.error_text.grid(row=2, column=0, pady=(5))
 
-        menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Paste",font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text=self._MENU_BUTTON_TEXT,font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         menu_button.grid(row=3, column=0, pady=(10,0))
 
     def load_main(self):
         self._clear()
         self._load_header()
 
-        BUTTON_WIDTH = 80
         BUTTON_PADDING = 5
         BUTTON_FONT_SIZE = 18
 
-        hero_text = CTk.CTkLabel(master=self, fg_color=self._WHITE_COLOR, text_color="black", text="Choose template", font=(self._FONT, 24))
+        hero_text = CTk.CTkLabel(master=self, fg_color=self._WHITE_COLOR, text_color="black", text=self._MAIN_TITLE_TEXT, font=(self._FONT, 24))
         hero_text.grid(row=1,column=0, sticky="w", padx=(7,0), pady=(7,0))
 
         template_buttons_frame = CTk.CTkFrame(master=self, fg_color=self._WHITE_COLOR, bg_color=self._WHITE_COLOR)
         template_buttons_frame.grid(row=2, column=0, sticky="w")
 
-        template_clear = CTk.CTkButton(master=template_buttons_frame,command=lambda: self._app.select_all_checkboxes(0),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="Clear",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        template_clear = CTk.CTkButton(master=template_buttons_frame,command=lambda: self._app.select_all_checkboxes(0),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=self._MAIN_CLEAR_BUTTON_TEXT,font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         template_clear.grid(row=0, column=0, sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
 
-        template_all = CTk.CTkButton(master=template_buttons_frame, command=lambda: self._app.select_all_checkboxes(1),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text="All",font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        template_all = CTk.CTkButton(master=template_buttons_frame, command=lambda: self._app.select_all_checkboxes(1),hover_color=self._HOVER_PURPLE_COLOR,width=80,height=20, text_color="black",corner_radius=11,border_width=1,border_color="black",text=self._MAIN_ALL_BUTTON_TEXT,font=(self._FONT,BUTTON_FONT_SIZE), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         template_all.grid(row=0, column=1,sticky="w", padx=(BUTTON_PADDING,0),pady=(BUTTON_PADDING, 0))
 
         for n,i in enumerate(self._app.config_manager.templates):
@@ -303,64 +332,66 @@ class Gui(CTk.CTk):
             entry.bind("<Return>", self._app.focus_next_entry)
             self.entry_list.append(entry)
 
-        file_name_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
-        file_name_frame.grid(row=3, column=0,sticky="ne",padx=(0,100))
+        additions_frame = CTk.CTkFrame(master=self,bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR)
+        additions_frame.grid(row=3, column=0, sticky="ne", padx=(0,40))
 
-        file_name_frame_text = CTk.CTkLabel(master=file_name_frame, text="Write the file name", font=(self._FONT, 24),text_color="black")
+        file_name_frame_text = CTk.CTkLabel(master=additions_frame, text=self._MAIN_WRITE_FILE_NAME_TEXT, font=(self._FONT, 24),text_color="black")
         file_name_frame_text.grid(row=0,column=0)
 
-        self.file_name_frame_entry = CTk.CTkEntry(master=file_name_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
-        self.file_name_frame_entry.grid(row=1,column=0, pady=(5,0))
+        self.file_name_frame_entry = CTk.CTkEntry(master=additions_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
+        self.file_name_frame_entry.grid(row=1,column=0, pady=(10,0))
 
-        self.column_count_frame = CTk.CTkFrame(master=self,fg_color=self._WHITE_COLOR,bg_color=self._WHITE_COLOR)
-        self.column_count_frame.grid(row=3, column=0,sticky="se",padx=(0,66), pady=(0,150))
+        column_count_frame_text = CTk.CTkLabel(master=additions_frame, text=self._MAIN_WRITE_LINES_COUNT_TEXT, font=(self._FONT, 24),text_color="black")
+        column_count_frame_text.grid(row=2,column=0, pady=(30,0))
 
-        column_count_frame_text = CTk.CTkLabel(master=self.column_count_frame, text="Write the number of lines", font=(self._FONT, 24),text_color="black")
-        column_count_frame_text.grid(row=0,column=0)
-
-        self.column_count_frame_entry = CTk.CTkEntry(master=self.column_count_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
-        self.column_count_frame_entry.grid(row=1,column=0, pady=(5,0))
+        self.column_count_frame_entry = CTk.CTkEntry(master=additions_frame, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,18))
+        self.column_count_frame_entry.insert(0, 0)
+        self.column_count_frame_entry.grid(row=3,column=0, pady=(10,0))
 
         self.is_custom_order = CTk.IntVar(value=0)
-        checkbox_is_custom_order = CTk.CTkCheckBox(master=self,bg_color=self._WHITE_COLOR,variable=self.is_custom_order, text="Custom order", font=(self._FONT,22), text_color="black", checkbox_width=20, checkbox_height=20)
-        checkbox_is_custom_order.grid(row=3, column=0,sticky="se",padx=(0,130), pady=(0,80 ))
+        checkbox_is_custom_order = CTk.CTkCheckBox(master=additions_frame,bg_color=self._WHITE_COLOR,variable=self.is_custom_order, text=self._CUSTOM_ORDER_TEXT, font=(self._FONT,22), text_color="black", checkbox_width=20, checkbox_height=20)
+        checkbox_is_custom_order.grid(row=4, column=0, pady=(30,0))
 
-        back_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(0),hover_color=self._HOVER_PURPLE_COLOR, text="Back", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        back_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(0),hover_color=self._HOVER_PURPLE_COLOR, text=self._BACK_BUTTON_TEXT, fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
         back_button.grid(row=4, column=0, sticky="ws", padx=(10,0), pady=(5,0))
 
-        next_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        next_button = CTk.CTkButton(master=self,command=self._app.compilate_data,hover_color=self._HOVER_PURPLE_COLOR, text=self._NEXT_BUTTON_TEXT, fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
         next_button.grid(row=4, column=0, sticky="se", padx=(0,10), pady=(5,0))
 
     def load_success(self):
         self._clear()
         self._load_header()
 
-        success_text = CTk.CTkLabel(master=self, text="Success!", font=(self._FONT,32),fg_color=self._WHITE_COLOR,text_color="black")
+        success_text = CTk.CTkLabel(master=self, text=self.SUCCESS_TITLE, font=(self._FONT,32),fg_color=self._WHITE_COLOR,text_color="black")
         success_text.grid(row=1, column=0, pady=(100, 0))
 
         success_frame = CTk.CTkFrame(master=self, bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR)
         success_frame.grid(row=2,column=0, pady=(15,0))
 
-        exit_button = CTk.CTkButton(master=success_frame,command=self.quit,bg_color=self._WHITE_COLOR,width=100, text="Exit", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        exit_button = CTk.CTkButton(master=success_frame,command=self.quit,bg_color=self._WHITE_COLOR,width=100, text=self._EXIT_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=0)
 
-        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=100, text="Back", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=100, text=self._BACK_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=1, padx=10)
 
-        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Menu", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text=self._EXIT_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=2)
 
     def load_custom_order(self):
         self._clear()
         self._load_header()
 
-        self.draggable_listbox = DraggableListbox(self, self._app.get_select_fields_for_drag())
-        self.draggable_listbox.grid(row=1, column=0,pady=20)
+        custom_order_text = CTk.CTkLabel(master=self, text=self.CUSTOM_ORDER_TITLE, font=(self._FONT,30),fg_color=self._WHITE_COLOR,text_color="black")
+        custom_order_text.grid(row=1, column=0, pady=(10,0))
 
-        next_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(1),hover_color=self._HOVER_PURPLE_COLOR, text="Back", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
-        next_button.grid(row=2, column=0, sticky="sw", padx=(10,0), pady=(70,0))
-        back_button = CTk.CTkButton(master=self,command=lambda: self._app.compilate_ordered_data(self.draggable_listbox.get_items()),hover_color=self._HOVER_PURPLE_COLOR, text="Next", fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
-        back_button.grid(row=2, column=0, sticky="se", padx=(0,10), pady=(70,0))
+        self.draggable_listbox = DraggableListbox(self, self._app.get_select_fields_for_drag())
+        self.draggable_listbox.grid(row=2, column=0,pady=10)
+
+        next_button = CTk.CTkButton(master=self,command=lambda: self._app.change_window(1),hover_color=self._HOVER_PURPLE_COLOR, text=self._BACK_BUTTON_TEXT, fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        next_button.grid(row=3, column=0, sticky="sw", padx=(10,0), pady=(125,0))
+
+        back_button = CTk.CTkButton(master=self,command=lambda: self._app.compilate_ordered_data(self.draggable_listbox.get_items()),hover_color=self._HOVER_PURPLE_COLOR, text=self._NEXT_BUTTON_TEXT, fg_color=self._PURPLE_COLOR, font=(self._FONT, 18), bg_color=self._WHITE_COLOR, width=70, border_width=1, border_color="black", text_color="black")
+        back_button.grid(row=3, column=0, sticky="se", padx=(0,10), pady=(125,0))
 
     def load_settings(self):
         self._clear()
@@ -373,10 +404,10 @@ class Gui(CTk.CTk):
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_propagate(False)
 
-        settings_text = CTk.CTkLabel(master=frame, text="Settings", font=(self._FONT,30),fg_color=GRAY_COLOR,text_color="black")
+        settings_text = CTk.CTkLabel(master=frame, text=self._SETTINGS_TITLE_TEXT, font=(self._FONT,30),fg_color=GRAY_COLOR,text_color="black")
         settings_text.grid(row=0, column=0, pady=(10,0))
 
-        choose_directory_text = CTk.CTkLabel(master=frame, text="Select a folder to save the files:", font=(self._FONT,18),fg_color="#c9c9c9",text_color="black")
+        choose_directory_text = CTk.CTkLabel(master=frame, text=self._SETTINGS_SELECT_FOLDER_TEXT, font=(self._FONT,18),fg_color="#c9c9c9",text_color="black")
         choose_directory_text.grid(row=1, column=0, pady=(10,0))
 
         select_folder_frame = CTk.CTkFrame(master=frame, fg_color=GRAY_COLOR)
@@ -398,7 +429,7 @@ class Gui(CTk.CTk):
         clear_folder_button = CTk.CTkButton(master=select_folder_frame, command=self._app.on_click_remove_folder, image=self._delete_image, text="", width=20, border_width=1, border_color="black")
         clear_folder_button.grid(row=0, column=2, padx=(3,0))
 
-        delete_templates_text = CTk.CTkLabel(master=frame, text="Delete templates", font=(self._FONT,24),fg_color="#c9c9c9",text_color="black")
+        delete_templates_text = CTk.CTkLabel(master=frame, text=self._SETTINGS_DELETE_TEMPLATES_TEXT, font=(self._FONT,24),fg_color="#c9c9c9",text_color="black")
         delete_templates_text.grid(row=3, column=0, pady=(15,0))
 
         if len(self._app.config_manager.templates) != 0:
@@ -412,10 +443,10 @@ class Gui(CTk.CTk):
             not_found_text = CTk.CTkLabel(master=frame, text="Not found", font=(self._FONT,20),fg_color="#c9c9c9",text_color="black")
             not_found_text.grid(row=4,column=0, pady=(10,0))
 
-        back_button = CTk.CTkButton(master=self,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text="Back", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        back_button = CTk.CTkButton(master=self,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text=self._BACK_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         back_button.grid(row=2, column=0, padx=(0,110), pady=(10,0))
 
-        save_button = CTk.CTkButton(master=self,command=self._app.on_click_save_settings,bg_color=self._WHITE_COLOR,width=100, text="Save", font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        save_button = CTk.CTkButton(master=self,command=self._app.on_click_save_settings,bg_color=self._WHITE_COLOR,width=100, text=self._SAVE_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         save_button.grid(row=2, column=0, padx=(110,0), pady=(10,0))
 
     def load_add_tamplate_modal_window(self):
@@ -429,15 +460,15 @@ class Gui(CTk.CTk):
         frame.grid_columnconfigure(0, weight=1)
         frame.grid(row=0, column=0, pady=(100,10))
 
-        title = CTk.CTkLabel(master=frame, fg_color="#dedede", text_color="black", text="Write template name", font=(self._FONT, 24))
+        title = CTk.CTkLabel(master=frame, fg_color="#dedede", text_color="black", text=self.MAIN_MODAL_WINDOW_TITLE, font=(self._FONT, 24))
         title.grid(row=0, column=0, pady=(30,10))
 
         entry = CTk.CTkEntry(master=frame,width=180, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,20))
         entry.grid(row=1,column=0, pady=(0,10))
 
-        back_button = CTk.CTkButton(master=frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=90, text="Back", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        back_button = CTk.CTkButton(master=frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=90, text=self._BACK_BUTTON_TEXT, font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         back_button.grid(row=2, column=0,padx=(0,100))
-        save_button = CTk.CTkButton(master=frame,command=lambda:(self._app.save_tamplate(entry.get()),self._app.change_window(1)),bg_color=self._WHITE_COLOR,width=90, text="Save", font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        save_button = CTk.CTkButton(master=frame,command=lambda:(self._app.save_tamplate(entry.get()),self._app.change_window(1)),bg_color=self._WHITE_COLOR,width=90, text=self._SAVE_BUTTON_TEXT, font=(self._FONT,22), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         save_button.grid(row=2, column=0,padx=(100,0))
 
     def _clear(self):
@@ -446,7 +477,7 @@ class Gui(CTk.CTk):
 
     def _load_header(self, is_show_settings=False):
         header_frame = CTk.CTkFrame(master=self,border_width=0, fg_color=self._BLUE_COLOR, width=800, height=73, corner_radius=0)
-        header_frame__text = CTk.CTkLabel(master=self, text="Teacher helper", bg_color=self._BLUE_COLOR,font=(self._FONT,40))
+        header_frame__text = CTk.CTkLabel(master=self, text=self._HEADER_TEXT, bg_color=self._BLUE_COLOR,font=(self._FONT,40))
         header_frame__text.grid(row=0, column=0)
         if(is_show_settings == True):
             header_settings = CTk.CTkButton(master=self, command=self.load_settings,image=self._settings_image, hover_color=self._BLUE_COLOR, fg_color=self._BLUE_COLOR,bg_color=self._BLUE_COLOR, text="", width=50)
@@ -512,6 +543,10 @@ class App:
     def compilate_data(self):
         custom_order = self.gui.is_custom_order.get()
         self._data_manager = DataManager(self)
+
+        if len(self._data_manager.selected_fields) == 0:
+            return
+
         if custom_order == 0:
             self._data_manager.process_data()
             self._write_to_excel()
@@ -525,25 +560,21 @@ class App:
         try:
             self._html = self.gui.clipboard_get()
         except:
-            self.gui.error_text.configure(text="Cant get data from clipboard")
+            self.gui.error_text.configure(text=self.gui._MENU_ERR_CANT_GET_CLIPBOARD_TEXT)
             return
         try:
             self._parse_html()
         except:
-            self.gui.error_text.configure(text="Wrong html code")
+            self.gui.error_text.configure(text=self.gui._MENU_ERR_WRONG_HTML_CODE_TEXT)
             return
         self.gui.load_main()
 
     def select_checkboxes_by_template(self, name):
         template = self.config_manager.templates[name]
-        print(template)
         self.select_all_checkboxes(0)
         for i in template:
             for n2,j in enumerate(self.gui.checkboxes_list):
                 text = j.cget("text")
-                print(text, end="")
-                print(" ", end="")
-                print(i[0])
                 if text == i[0]:
                     j.select()
                     self.gui.entry_list[n2].configure(state="normal", fg_color=self.gui._WHITE_COLOR)
@@ -566,10 +597,12 @@ class App:
                 break
 
     def get_select_fields_for_drag(self):
-        
-        return[field[-1] for field in self.selected_fields]
+        list = [field[-1] for field in self.selected_fields]
+        del list[0]
+        return list
 
     def compilate_ordered_data(self, new_order):
+        new_order = ("Opiskelijan nimi",) + new_order
         sorted_fields = sorted(self.selected_fields, key=lambda x: new_order.index(x[-1]))
         self._data_manager.process_data(sorted_fields)
         self._write_to_excel()
