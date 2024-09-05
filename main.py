@@ -235,36 +235,35 @@ class Gui(CTk.CTk):
         self._PURPLE_COLOR = "#5A4AEA"
         self._HOVER_PURPLE_COLOR = "#4533b5"
 
-        self._NEXT_BUTTON_TEXT = "Next"
-        self._BACK_BUTTON_TEXT = "Back"
-        self._SAVE_BUTTON_TEXT = "Save"
-        self._EXIT_BUTTON_TEXT = "Exit"
-        self._MENU_BUTTON_TEXT = "Menu"
-        
+        self._NEXT_BUTTON_TEXT = "Seuraava"
+        self._BACK_BUTTON_TEXT = "Takaisin"
+        self._SAVE_BUTTON_TEXT = "Tallenna"
+        self._EXIT_BUTTON_TEXT = "Poistu"
+        self._MENU_BUTTON_TEXT = "Valikko"
 
-        self._HEADER_TEXT = "Teacher helper"
-        self._MENU_COPY_AND_CLICK_TEXT = "Copy code, and click the button"
-        self._MENU_BUTTON_TEXT = "Paste"
-        self._MENU_ERR_WRONG_HTML_CODE_TEXT = "Wrong html code"
-        self._MENU_ERR_CANT_GET_CLIPBOARD_TEXT = "Cant get data from clipboard"
-        
-        self._SETTINGS_TITLE_TEXT = "Settings"
-        self._SETTINGS_SELECT_FOLDER_TEXT = "Select a folder to save the files:"
-        self._SETTINGS_DELETE_TEMPLATES_TEXT = "Delete template"
-        self._SETTINGS_NOT_FOUND_TEXT = "Not found"
+        self._HEADER_TEXT = "Opettajan apuri"
+        self._MENU_COPY_AND_CLICK_TEXT = "Kopioi koodi ja klikkaa painiketta"
+        self._MENU_PASTE_BUTTON_TEXT = "Liitä"
+        self._MENU_ERR_WRONG_HTML_CODE_TEXT = "Virheellinen HTML-koodi"
+        self._MENU_ERR_CANT_GET_CLIPBOARD_TEXT = "Ei voi saada tietoja leikepöydältä"
 
-        self._MAIN_TITLE_TEXT = "Choose template"
-        self._MAIN_ALL_BUTTON_TEXT = "All"
-        self._MAIN_CLEAR_BUTTON_TEXT = "Clear"
-        self._MAIN_WRITE_FILE_NAME_TEXT = "Write file name:"
-        self._MAIN_WRITE_LINES_COUNT_TEXT = "Write the numbe of lines:"
-        self._CUSTOM_ORDER_TEXT = "Custom order"
+        self._SETTINGS_TITLE_TEXT = "Asetukset"
+        self._SETTINGS_SELECT_FOLDER_TEXT = "Valitse kansio tiedostojen tallentamista varten:"
+        self._SETTINGS_DELETE_TEMPLATES_TEXT = "Poista malli"
+        self._SETTINGS_NOT_FOUND_TEXT = "Ei löydy"
 
-        self.MAIN_MODAL_WINDOW_TITLE = "Write template name"
+        self._MAIN_TITLE_TEXT = "Valitse malli"
+        self._MAIN_ALL_BUTTON_TEXT = "Kaikki"
+        self._MAIN_CLEAR_BUTTON_TEXT = "Tyhjennä"
+        self._MAIN_WRITE_FILE_NAME_TEXT = "Kirjoita tiedoston nimi:"
+        self._MAIN_WRITE_LINES_COUNT_TEXT = "Kirjoita rivien määrä:"
+        self._CUSTOM_ORDER_TEXT = "Mukautettu järjestys"
 
-        self.CUSTOM_ORDER_TITLE = "Custom order:"
+        self._MAIN_MODAL_WINDOW_TITLE = "Kirjoita mallin nimi"
 
-        self.SUCCESS_TITLE = "Success!"
+        self._CUSTOM_ORDER_TITLE = "Mukautettu järjestys:"
+
+        self._SUCCESS_TITLE = "Onnistui!"
 
         self.geometry("800x500")
         self.title("Teacher helper")
@@ -284,7 +283,7 @@ class Gui(CTk.CTk):
         self.error_text = CTk.CTkLabel(master=self,fg_color=self._WHITE_COLOR,text_color="red",text="", font=(self._FONT,24))
         self.error_text.grid(row=2, column=0, pady=(5))
 
-        menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text=self._MENU_BUTTON_TEXT,font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
+        menu_button = CTk.CTkButton(master=self, command=self._app.menu_button_handle,hover_color=self._HOVER_PURPLE_COLOR,width=170,height=45, text_color="black",corner_radius=11,border_width=1,border_color="black",text=self._MENU_PASTE_BUTTON_TEXT,font=(self._FONT,30), fg_color=self._PURPLE_COLOR, bg_color=self._WHITE_COLOR)
         menu_button.grid(row=3, column=0, pady=(10,0))
 
     def load_main(self):
@@ -367,7 +366,7 @@ class Gui(CTk.CTk):
         self._clear()
         self._load_header()
 
-        success_text = CTk.CTkLabel(master=self, text=self.SUCCESS_TITLE, font=(self._FONT,32),fg_color=self._WHITE_COLOR,text_color="black")
+        success_text = CTk.CTkLabel(master=self, text=self._SUCCESS_TITLE, font=(self._FONT,32),fg_color=self._WHITE_COLOR,text_color="black")
         success_text.grid(row=1, column=0, pady=(100, 0))
 
         success_frame = CTk.CTkFrame(master=self, bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR)
@@ -379,7 +378,7 @@ class Gui(CTk.CTk):
         exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(1),bg_color=self._WHITE_COLOR,width=100, text=self._BACK_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=1, padx=10)
 
-        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text=self._EXIT_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
+        exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text=self._MENU_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=2)
 
         author_text = CTk.CTkLabel(master=self,font=(self._FONT, 16),text_color="black",bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR, text="Author: Huziichuk Nazar | Github: guziiuchyk/Teacher-helper | Gmail: guziiuchyk@gmail.com")
@@ -389,7 +388,7 @@ class Gui(CTk.CTk):
         self._clear()
         self._load_header()
 
-        custom_order_text = CTk.CTkLabel(master=self, text=self.CUSTOM_ORDER_TITLE, font=(self._FONT,30),fg_color=self._WHITE_COLOR,text_color="black")
+        custom_order_text = CTk.CTkLabel(master=self, text=self._CUSTOM_ORDER_TITLE, font=(self._FONT,30),fg_color=self._WHITE_COLOR,text_color="black")
         custom_order_text.grid(row=1, column=0, pady=(10,0))
 
         self.draggable_listbox = DraggableListbox(self, self._app.get_select_fields_for_drag())
@@ -407,7 +406,7 @@ class Gui(CTk.CTk):
 
         GRAY_COLOR = "#c9c9c9"
 
-        frame = CTk.CTkFrame(master=self, corner_radius=28, fg_color=GRAY_COLOR, width=300, height=350, bg_color=self._WHITE_COLOR)
+        frame = CTk.CTkFrame(master=self, corner_radius=28, fg_color=GRAY_COLOR, width=400, height=350, bg_color=self._WHITE_COLOR)
         frame.grid(row=1, column=0, pady=(10,0))
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_propagate(False)
@@ -421,7 +420,7 @@ class Gui(CTk.CTk):
         select_folder_frame = CTk.CTkFrame(master=frame, fg_color=GRAY_COLOR)
         select_folder_frame.grid(row=2, column=0, pady=(5,0))
 
-        self.selected_folder_entry = CTk.CTkEntry(master=select_folder_frame, text_color="black",fg_color=self._WHITE_COLOR, corner_radius=5, font=(self._FONT,10),width=200)
+        self.selected_folder_entry = CTk.CTkEntry(master=select_folder_frame, text_color="black",fg_color=self._WHITE_COLOR, corner_radius=5, font=(self._FONT,10),width=250)
         
         if self._app.config_manager.save_folder_path:
             self.selected_folder_entry.insert(0, self._app.config_manager.save_folder_path)
@@ -438,7 +437,7 @@ class Gui(CTk.CTk):
         clear_folder_button.grid(row=0, column=2, padx=(3,0))
 
         delete_templates_text = CTk.CTkLabel(master=frame, text=self._SETTINGS_DELETE_TEMPLATES_TEXT, font=(self._FONT,24),fg_color="#c9c9c9",text_color="black")
-        delete_templates_text.grid(row=3, column=0, pady=(15,0))
+        delete_templates_text.grid(row=3, column=0, pady=(30,0))
 
         if len(self._app.config_manager.templates) != 0:
             templates_frame = CTk.CTkFrame(master=frame, fg_color=GRAY_COLOR)
@@ -468,7 +467,7 @@ class Gui(CTk.CTk):
         frame.grid_columnconfigure(0, weight=1)
         frame.grid(row=0, column=0, pady=(100,10))
 
-        title = CTk.CTkLabel(master=frame, fg_color="#dedede", text_color="black", text=self.MAIN_MODAL_WINDOW_TITLE, font=(self._FONT, 24))
+        title = CTk.CTkLabel(master=frame, fg_color="#dedede", text_color="black", text=self._MAIN_MODAL_WINDOW_TITLE, font=(self._FONT, 24))
         title.grid(row=0, column=0, pady=(30,10))
 
         entry = CTk.CTkEntry(master=frame,width=180, text_color="black",fg_color=self._WHITE_COLOR, font=(self._FONT,20))
