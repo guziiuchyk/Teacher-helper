@@ -6,6 +6,11 @@ import customtkinter as CTk
 import tkinter as tk
 from PIL import Image
 from pathlib import Path
+import os
+import sys
+
+#Build command:
+#pyinstaller --onefile --windowed --add-data "close.png:." --add-data "settings.png:." --add-data "folder.png:." .\main.py
 
 class DraggableListbox(CTk.CTkFrame):
     def __init__(self, master, items, **kwargs):
@@ -265,9 +270,9 @@ class Gui(CTk.CTk):
         self.title("Teacher helper")
         self._set_appearance_mode("light")
         self.resizable(height=False, width=False)
-        self._settings_image = CTk.CTkImage(light_image=Image.open("settings.png"), dark_image=Image.open("settings.png"), size=(50,50))
-        self._folder_image = CTk.CTkImage(light_image=Image.open("folder.png"), dark_image=Image.open("folder.png"), size=(20,20))
-        self._delete_image = CTk.CTkImage(light_image=Image.open("close.png"), dark_image=Image.open("close.png"), size=(15,15)) 
+        self._settings_image = CTk.CTkImage(light_image=Image.open(self._app.resource_path("settings.png")), dark_image=Image.open(self._app.resource_path("settings.png")), size=(50,50))
+        self._folder_image = CTk.CTkImage(light_image=Image.open(self._app.resource_path("folder.png")), dark_image=Image.open(self._app.resource_path("folder.png")), size=(20,20))
+        self._delete_image = CTk.CTkImage(light_image=Image.open(self._app.resource_path("close.png")), dark_image=Image.open(self._app.resource_path("close.png")), size=(15,15)) 
         self.load_menu() 
 
     def load_menu(self):
@@ -376,6 +381,9 @@ class Gui(CTk.CTk):
 
         exit_button = CTk.CTkButton(master=success_frame,command=lambda:self._app.change_window(0),bg_color=self._WHITE_COLOR,width=100, text=self._EXIT_BUTTON_TEXT, font=(self._FONT,24), fg_color=self._PURPLE_COLOR,hover_color=self._HOVER_PURPLE_COLOR, border_width=1, border_color="black",text_color="black")
         exit_button.grid(row=0,column=2)
+
+        author_text = CTk.CTkLabel(master=self,font=(self._FONT, 16),text_color="black",bg_color=self._WHITE_COLOR, fg_color=self._WHITE_COLOR, text="Author: Huziichuk Nazar | Github: guziiuchyk/Teacher-helper | Gmail: guziiuchyk@gmail.com")
+        author_text.grid(row=3, column=0, sticky="s",pady=(210,0))
 
     def load_custom_order(self):
         self._clear()
@@ -647,5 +655,12 @@ class App:
         self.config_manager.templates[name] = data_manager.selected_fields
         self._file_manager.write_config(self.config_manager)
 
+    def resource_path(self,relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
 if __name__ == "__main__":
     app = App()
